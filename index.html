@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horários - Ônibus e Remédios</title>
+
+</head>
+<style>
+     * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            padding: 2rem;
+            color: white;
+        }
+
+        .sidebar h1 {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #ecf0f1;
+        }
+
+        .menu-item {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .menu-item.active {
+            background: #3498db;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .menu-item i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .header h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 1.5rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        td {
+            color: #555;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .status.disponivel {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.indisponivel {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status.limitado {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .info-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+        }
+
+        .info-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .info-card li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.7rem;
+            }
+        }
+</style>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>🚌 Horários & Saúde</h1>
+            <button class="menu-item active" onclick="showSection('onibus')">
+                🚌 Horários de Ônibus
+            </button>
+            <button class="menu-item" onclick="showSection('remedios')">
+                💊 Abastecimento de Remédios
+            </button>
+            <button class="menu-item" onclick="showSection('banheiros')">
+                🚻 Banheiros Adaptados
+            </button>
+            <button class="menu-item" onclick="showSection('projeto')">
+                💡 Sobre o Projeto
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div id="onibus" class="content-section active">
+                <div class="header">
+                    <h2>Horários de Ônibus</h2>
+                    <p>Confira os horários e rotas disponíveis</p>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        Linhas Centro - Bairros
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Linha</th>
+                                <th>Origem</th>
+                                <th>Destino</th>
+                                <th>Primeiro Horário</th>
+                                <th>Último Horário</th>
+                                <th>Intervalo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>001</strong></td>
+                                <td>Terminal Centro</td>
+                                <td>Bairro Conceição</td>
+                                <td>05:30</td>
+                                <td>22:00</td>
+                                <td>30 min</td>
+                                <td><span class="status disponivel">Operando</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>002</strong></td>
+                                <td>Terminal Centro</td>
+                                <td>Bairro Tomba</td>
+                                <td>05:45</td>
+                                <td>21:30</td>
+                                <td>25 min</td>
+                                <td><span class="status disponivel">Operando</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>003</strong></td>
+                                <td>Terminal Centro</td>
+                                <td>Feira VII</td>
+                                <td>06:00</td>
+                                <td>22:30</td>
+                                <td>20 min</td>
+                                <td><span class="status disponivel">Operando</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>004</strong></td>
+                                <td>Terminal Centro</td>
+                                <td>Campo Limpo</td>
+                                <td>06:15</td>
+                                <td>21:00</td>
+                                <td>35 min</td>
+                                <td><span class="status limitado">Limitado</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>005</strong></td>
+                                <td>Terminal Centro</td>
+                                <td>Mangabeira</td>
+                                <td>05:30</td>
+                                <td>22:15</td>
+                                <td>40 min</td>
+                                <td><span class="status disponivel">Operando</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        Linhas Intercomunicação
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Linha</th>
+                                <th>Origem</th>
+                                <th>Destino</th>
+                                <th>Primeiro Horário</th>
+                                <th>Último Horário</th>
+                                <th>Intervalo</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>101</strong></td>
+                                <td>Tomba</td>
+                                <td>Feira VII</td>
+                                <td>06:30</td>
+                                <td>18:00</td>
+                                <td>60 min</td>
+                                <td><span class="status disponivel">Operando</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>102</strong></td>
+                                <td>Conceição</td>
+                                <td>Campo Limpo</td>
+                                <td>07:00</td>
+                                <td>17:30</td>
+                                <td>90 min</td>
+                                <td><span class="status limitado">Limitado</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-card">
+                    <h3>Informações Importantes</h3>
+                    <ul>
+                        <li><strong>Cartão de Transporte:</strong> Aceito em todas as linhas</li>
+                        <li><strong>Desconto Estudante:</strong> 50% com carteirinha válida</li>
+                        <li><strong>Gratuidade:</strong> Idosos acima de 60 anos e pessoas com deficiência</li>
+                        <li><strong>Tarifa Atual:</strong> R$ 4,50 (valor sujeito a alteração)</li>
+                        <li><strong>Atendimento:</strong> Segunda a domingo, conforme horários</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="remedios" class="content-section">
+                <div class="header">
+                    <h2>Abastecimento de Remédios</h2>
+                    <p>Disponibilidade de medicamentos nas farmácias públicas</p>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        UBS - Unidades Básicas de Saúde
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Unidade</th>
+                                <th>Endereço</th>
+                                <th>Horário Funcionamento</th>
+                                <th>Último Abastecimento</th>
+                                <th>Próximo Abastecimento</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>UBS Centro</strong></td>
+                                <td>Rua Senhor do Bonfim, 123</td>
+                                <td>07:00 - 17:00</td>
+                                <td>01/09/2025</td>
+                                <td>05/09/2025</td>
+                                <td><span class="status disponivel">Bem Abastecida</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>UBS Tomba</strong></td>
+                                <td>Av. João Durval, 456</td>
+                                <td>07:00 - 16:00</td>
+                                <td>28/08/2025</td>
+                                <td>03/09/2025</td>
+                                <td><span class="status limitado">Estoque Baixo</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>UBS Conceição</strong></td>
+                                <td>Rua da Conceição, 789</td>
+                                <td>08:00 - 17:00</td>
+                                <td>02/09/2025</td>
+                                <td>06/09/2025</td>
+                                <td><span class="status disponivel">Bem Abastecida</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>UBS Feira VII</strong></td>
+                                <td>Rua Marechal Deodoro, 321</td>
+                                <td>07:30 - 16:30</td>
+                                <td>30/08/2025</td>
+                                <td>04/09/2025</td>
+                                <td><span class="status indisponivel">Desabastecida</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>UBS Campo Limpo</strong></td>
+                                <td>Av. Campo Limpo, 654</td>
+                                <td>07:00 - 17:00</td>
+                                <td>01/09/2025</td>
+                                <td>05/09/2025</td>
+                                <td><span class="status disponivel">Bem Abastecida</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        Farmácias Populares
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Farmácia</th>
+                                    <th>Endereço</th>
+                                    <th>Horário Funcionamento</th>
+                                    <th>Último Abastecimento</th>
+                                    <th>Próximo Abastecimento</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Farmácia Popular Centro</strong></td>
+                                    <td>Praça da Matriz, 100</td>
+                                    <td>08:00 - 18:00</td>
+                                    <td>02/09/2025</td>
+                                    <td>09/09/2025</td>
+                                    <td><span class="status disponivel">Bem Abastecida</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Farmácia Popular Shopping</strong></td>
+                                    <td>Shopping Feira, Loja 45</td>
+                                    <td>09:00 - 21:00</td>
+                                    <td>31/08/2025</td>
+                                    <td>07/09/2025</td>
+                                    <td><span class="status limitado">Estoque Baixo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Medicamentos Disponíveis</h3>
+                    <ul>
+                        <li><strong>Medicamentos Básicos:</strong> Paracetamol, Dipirona, Ibuprofeno</li>
+                        <li><strong>Hipertensão:</strong> Captopril, Enalapril, Atenolol</li>
+                        <li><strong>Diabetes:</strong> Metformina, Glibenclamida, Insulina</li>
+                        <li><strong>Antibióticos:</strong> Amoxicilina, Cefalexina (com receita)</li>
+                        <li><strong>Outros:</strong> Omeprazol, Sinvastatina, Losartana</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>Como Retirar Medicamentos</h3>
+                    <ul>
+                        <li><strong>Documentos:</strong> RG, CPF e Cartão SUS</li>
+                        <li><strong>Receita:</strong> Obrigatória para medicamentos controlados</li>
+                        <li><strong>Validade:</strong> Receita válida por 30 dias</li>
+                        <li><strong>Quantidade:</strong> Limite de 30 dias por retirada</li>
+                        <li><strong>Horário:</strong> Conforme funcionamento de cada unidade</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="banheiros" class="content-section">
+                <div class="header">
+                    <h2>Banheiros Adaptados</h2>
+                    <p>Localização de banheiros acessíveis para pessoas com deficiência</p>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        Shoppings e Centros Comerciais
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Local</th>
+                                    <th>Endereço</th>
+                                    <th>Quantidade</th>
+                                    <th>Localização</th>
+                                    <th>Horário Funcionamento</th>
+                                    <th>Acessibilidade</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Shopping Feira</strong></td>
+                                    <td>Av. João Durval Carneiro, 500</td>
+                                    <td>4 unidades</td>
+                                    <td>1º e 2º Piso - Praça de Alimentação</td>
+                                    <td>09:00 - 22:00</td>
+                                    <td>Rampa, Barras, Fraldário</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Boulevard Shopping</strong></td>
+                                    <td>BR-324, Km 6</td>
+                                    <td>6 unidades</td>
+                                    <td>Térreo e 1º Piso - Próximo aos Elevadores</td>
+                                    <td>10:00 - 22:00</td>
+                                    <td>Rampa, Barras, Fraldário</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Centro de Abastecimento</strong></td>
+                                    <td>Av. Getúlio Vargas, 1234</td>
+                                    <td>2 unidades</td>
+                                    <td>Entrada Principal - Setor A</td>
+                                    <td>05:00 - 18:00</td>
+                                    <td>Rampa, Barras</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Plaza Shopping</strong></td>
+                                    <td>Rua Marechal Deodoro, 78</td>
+                                    <td>3 unidades</td>
+                                    <td>Térreo - Próximo à Entrada</td>
+                                    <td>09:00 - 21:00</td>
+                                    <td>Rampa, Barras, Fraldário</td>
+                                    <td><span class="status limitado">Manutenção</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        Hospitais e Unidades de Saúde
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Local</th>
+                                    <th>Endereço</th>
+                                    <th>Quantidade</th>
+                                    <th>Localização</th>
+                                    <th>Horário Funcionamento</th>
+                                    <th>Acessibilidade</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Hospital Dom Pedro de Alcântara</strong></td>
+                                    <td>Rua Conselheiro Franco, 10</td>
+                                    <td>8 unidades</td>
+                                    <td>Todos os Andares - Próximo às Enfermarias</td>
+                                    <td>24 horas</td>
+                                    <td>Rampa, Barras, Cadeirante</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hospital da Mulher</strong></td>
+                                    <td>Av. Eduardo Fróes da Mota, 100</td>
+                                    <td>6 unidades</td>
+                                    <td>Recepção, Maternidade e Ambulatório</td>
+                                    <td>24 horas</td>
+                                    <td>Rampa, Barras, Fraldário</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>UPA Norte</strong></td>
+                                    <td>Rua Direita da Conceição, 456</td>
+                                    <td>4 unidades</td>
+                                    <td>Recepção e Observação</td>
+                                    <td>24 horas</td>
+                                    <td>Rampa, Barras</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hospital Clériston Andrade</strong></td>
+                                    <td>Av. Clériston Andrade, 322</td>
+                                    <td>10 unidades</td>
+                                    <td>Todos os Setores</td>
+                                    <td>24 horas</td>
+                                    <td>Rampa, Barras, Cadeirante</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>CAPS - Centro Atenção Psicossocial</strong></td>
+                                    <td>Rua Professor Magalhães, 89</td>
+                                    <td>2 unidades</td>
+                                    <td>Recepção</td>
+                                    <td>07:00 - 17:00</td>
+                                    <td>Rampa, Barras</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <div class="table-header">
+                        Espaços Públicos e Repartições
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Local</th>
+                                    <th>Endereço</th>
+                                    <th>Quantidade</th>
+                                    <th>Localização</th>
+                                    <th>Horário Funcionamento</th>
+                                    <th>Acessibilidade</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Prefeitura Municipal</strong></td>
+                                    <td>Praça da Matriz, s/n</td>
+                                    <td>3 unidades</td>
+                                    <td>Térreo e 1º Andar</td>
+                                    <td>07:00 - 13:00</td>
+                                    <td>Rampa, Barras</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Terminal Rodoviário</strong></td>
+                                    <td>Av. Senhor do Bonfim, 200</td>
+                                    <td>4 unidades</td>
+                                    <td>Saguão Principal</td>
+                                    <td>05:00 - 23:00</td>
+                                    <td>Rampa, Barras</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Centro de Convenções</strong></td>
+                                    <td>Av. Maria Quitéria, 1500</td>
+                                    <td>6 unidades</td>
+                                    <td>Hall de Entrada e Auditórios</td>
+                                    <td>Conforme Eventos</td>
+                                    <td>Rampa, Barras, Elevador</td>
+                                    <td><span class="status disponivel">Disponível</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3>Recursos de Acessibilidade Disponíveis</h3>
+                    <ul>
+                        <li><strong>Rampa de Acesso:</strong> Entrada facilitada para cadeirantes</li>
+                        <li><strong>Barras de Apoio:</strong> Suporte lateral e posterior</li>
+                        <li><strong>Fraldário:</strong> Mesa para troca de fraldas adulto/infantil</li>
+                        <li><strong>Espaço Ampliado:</strong> Circulação adequada para cadeira de rodas</li>
+                        <li><strong>Acionamento Facilitado:</strong> Torneiras e dispensadores adaptados</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>Como Denunciar Problemas</h3>
+                    <ul>
+                        <li><strong>Ouvidoria Municipal:</strong> (75) 3602-8000</li>
+                        <li><strong>WhatsApp:</strong> (75) 99999-0000</li>
+                        <li><strong>Site:</strong> www.feiradesantana.ba.gov.br</li>
+                        <li><strong>Presencialmente:</strong> Secretaria de Acessibilidade</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="projeto" class="content-section">
+                <div class="header">
+                    <h2>Sobre o Projeto</h2>
+                    <p>Conectando pessoas com acessibilidade e qualidade de vida</p>
+                </div>
+
+                <div class="info-card">
+                    <h3>🎯 Nossa Missão</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: #555; margin-top: 1rem;">
+                        O **Vida + Acessível** é uma iniciativa que visa reunir em uma única plataforma digital as informações essenciais para melhorar a qualidade de vida da população de Feira de Santana. Nosso objetivo é facilitar o acesso a serviços básicos e promover a inclusão social através da tecnologia.
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <h3>🚀 O que Oferecemos</h3>
+                    <ul style="font-size: 1rem; line-height: 1.8;">
+                        <li><strong>🚌 Transporte Público:</strong> Horários atualizados de todas as linhas de ônibus da cidade, incluindo rotas, intervalos e status operacional em tempo real</li>
+                        <li><strong>💊 Saúde Pública:</strong> Informações sobre disponibilidade de medicamentos nas UBS e Farmácias Populares, com dados de abastecimento sempre atualizados</li>
+                        <li><strong>♿ Acessibilidade:</strong> Mapeamento completo de banheiros adaptados em shoppings, hospitais e espaços públicos, garantindo autonomia para pessoas com deficiência</li>
+                        <li><strong>📱 Interface Responsiva:</strong> Acesso fácil e intuitivo através de qualquer dispositivo móvel, com design pensado na experiência do usuário</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>💡 Por que Criamos Este Projeto?</h3>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: #555; margin-top: 1rem;">
+                        Identificamos que as informações sobre serviços essenciais estavam dispersas em diferentes locais, dificultando o acesso da população. Muitas vezes, as pessoas perdiam tempo se deslocando até locais sem saber se o serviço estava disponível ou funcionando.
+                    </p>
+                    <br>
+                    <p style="font-size: 1.1rem; line-height: 1.6; color: #555;">
+                        Com o **Vida + Acessível**, centralizamos essas informações vitais em um só lugar, permitindo que cidadãos planejem melhor suas rotinas.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function showSection(sectionId) {
+        // Remove 'active' de todas as seções e botões
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.classList.remove('active');
+        });
+        document.querySelectorAll('.menu-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Adiciona 'active' à seção e ao botão clicado
+        document.getElementById(sectionId).classList.add('active');
+        document.querySelector(`.menu-item[onclick="showSection('${sectionId}')"]`).classList.add('active');
+    }
+    </script>
+    
+</script>
+</body>
+</html>
