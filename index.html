@@ -1,756 +1,543 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horários - Ônibus e Remédios</title>
-
+    <title>DanceStep - Aprenda a Dançar</title>
+   
 </head>
-<style>
-     * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        <link rel="stylesheet" href="style.css">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            display: flex;
-            min-height: 100vh;
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .sidebar {
-            width: 300px;
-            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
-            padding: 2rem;
-            color: white;
-        }
-
-        .sidebar h1 {
-            font-size: 1.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
-            color: #ecf0f1;
-        }
-
-        .menu-item {
-            display: block;
-            width: 100%;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-        }
-
-        .menu-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-        }
-
-        .menu-item.active {
-            background: #3498db;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-        }
-
-        .menu-item i {
-            margin-right: 10px;
-            font-size: 1.2rem;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 2rem;
-            background: #f8f9fa;
-        }
-
-        .header {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-
-        .header h2 {
-            color: #2c3e50;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .header p {
-            color: #7f8c8d;
-            font-size: 1.1rem;
-        }
-
-        .content-section {
-            display: none;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .table-container {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-bottom: 2rem;
-        }
-
-        .table-header {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-            padding: 1.5rem;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #ecf0f1;
-        }
-
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        td {
-            color: #555;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        .status {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-
-        .status.disponivel {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status.indisponivel {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .status.limitado {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .info-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1rem;
-        }
-
-        .info-card h3 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-        }
-
-        .info-card ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .info-card li {
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #ecf0f1;
-        }
-
-        .info-card li:last-child {
-            border-bottom: none;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                padding: 1rem;
-            }
-
-            .main-content {
-                padding: 1rem;
-            }
-
-            table {
-                font-size: 0.9rem;
-            }
-
-            th, td {
-                padding: 0.7rem;
-            }
-        }
-</style>
 <body>
-    <div class="container">
-        <div class="sidebar">
-            <h1>🚌 Horários & Saúde</h1>
-            <button class="menu-item active" onclick="showSection('onibus')">
-                🚌 Horários de Ônibus
-            </button>
-            <button class="menu-item" onclick="showSection('remedios')">
-                💊 Abastecimento de Remédios
-            </button>
-            <button class="menu-item" onclick="showSection('banheiros')">
-                🚻 Banheiros Adaptados
-            </button>
-            <button class="menu-item" onclick="showSection('projeto')">
-                💡 Sobre o Projeto
-            </button>
+    <div class="overlay" id="overlay"></div>
+
+    <button class="menu-toggle" id="menuToggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="sidebar" id="sidebar">
+        <h2>Comandos e Funcionalidades do App:</h2>
+
+        <div class="feature">
+            <div class="feature-icon"></div>
+            <h3>Testar Posições:</h3>
+            <p>O usuário pode testar e ajustar diferentes posições com os bonecos disponíveis no app.</p>
         </div>
 
-        <div class="main-content">
-            <div id="onibus" class="content-section active">
-                <div class="header">
-                    <h2>Horários de Ônibus</h2>
-                    <p>Confira os horários e rotas disponíveis</p>
-                </div>
+        <div class="feature">
+            <div class="feature-icon"></div>
+            <h3>Auxílio na preparação de danças:</h3>
+            <p>É possível clicar na função de importantes etapas, onde aparecerão informações sobre o tópico escolhido.</p>
+        </div>
 
-                <div class="table-container">
-                    <div class="table-header">
-                        Linhas Centro - Bairros
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Linha</th>
-                                <th>Origem</th>
-                                <th>Destino</th>
-                                <th>Primeiro Horário</th>
-                                <th>Último Horário</th>
-                                <th>Intervalo</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>001</strong></td>
-                                <td>Terminal Centro</td>
-                                <td>Bairro Conceição</td>
-                                <td>05:30</td>
-                                <td>22:00</td>
-                                <td>30 min</td>
-                                <td><span class="status disponivel">Operando</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>002</strong></td>
-                                <td>Terminal Centro</td>
-                                <td>Bairro Tomba</td>
-                                <td>05:45</td>
-                                <td>21:30</td>
-                                <td>25 min</td>
-                                <td><span class="status disponivel">Operando</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>003</strong></td>
-                                <td>Terminal Centro</td>
-                                <td>Feira VII</td>
-                                <td>06:00</td>
-                                <td>22:30</td>
-                                <td>20 min</td>
-                                <td><span class="status disponivel">Operando</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>004</strong></td>
-                                <td>Terminal Centro</td>
-                                <td>Campo Limpo</td>
-                                <td>06:15</td>
-                                <td>21:00</td>
-                                <td>35 min</td>
-                                <td><span class="status limitado">Limitado</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>005</strong></td>
-                                <td>Terminal Centro</td>
-                                <td>Mangabeira</td>
-                                <td>05:30</td>
-                                <td>22:15</td>
-                                <td>40 min</td>
-                                <td><span class="status disponivel">Operando</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <div class="feature">
+            <div class="feature-icon"></div>
+            <h3>Sugestões de Passos:</h3>
+            <p>O app oferece sugestões de passos de dança, que o usuário pode experimentar ou combinar como preferir.
+            </p>
+        </div>
 
-                <div class="table-container">
-                    <div class="table-header">
-                        Linhas Intercomunicação
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Linha</th>
-                                <th>Origem</th>
-                                <th>Destino</th>
-                                <th>Primeiro Horário</th>
-                                <th>Último Horário</th>
-                                <th>Intervalo</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>101</strong></td>
-                                <td>Tomba</td>
-                                <td>Feira VII</td>
-                                <td>06:30</td>
-                                <td>18:00</td>
-                                <td>60 min</td>
-                                <td><span class="status disponivel">Operando</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>102</strong></td>
-                                <td>Conceição</td>
-                                <td>Campo Limpo</td>
-                                <td>07:00</td>
-                                <td>17:30</td>
-                                <td>90 min</td>
-                                <td><span class="status limitado">Limitado</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+        <div class="feature">
+            <div class="feature-icon"></div>
+            <h3>Descubra seu ritmo:</h3>
+            <p>No nosso site, temos uma série de perguntas nas quais, 
+                de acordo com suas respostas, será indicado o ritmo com o qual você mais se identifica,
+                 seguido da dança correspondente.</p>
+        </div>
 
-                <div class="info-card">
-                    <h3>Informações Importantes</h3>
-                    <ul>
-                        <li><strong>Cartão de Transporte:</strong> Aceito em todas as linhas</li>
-                        <li><strong>Desconto Estudante:</strong> 50% com carteirinha válida</li>
-                        <li><strong>Gratuidade:</strong> Idosos acima de 60 anos e pessoas com deficiência</li>
-                        <li><strong>Tarifa Atual:</strong> R$ 4,50 (valor sujeito a alteração)</li>
-                        <li><strong>Atendimento:</strong> Segunda a domingo, conforme horários</li>
-                    </ul>
+        <!-- Adicionado do código secundário -->
+        <div class="feature" style="border-left-color: #4CAF50; cursor: pointer;" onclick="openStage()">
+            <div class="feature-icon" style="background: #4CAF50;">🎭</div>
+            <h3>Palco de Coreografia:</h3>
+            <p>Crie suas próprias coreografias! Arraste os bonecos para o palco e posicione-os como desejar para montar
+                formações e sequências de dança.</p>
+        </div>
+
+        <div class="feature" style="border-left-color: #9C27B0; cursor: pointer;" onclick="openQuiz()">
+            <div class="feature-icon" style="background: #9C27B0;">🎵</div>
+            <h3>Descubra Seu Estilo Musical:</h3>
+            <p>Responda perguntas divertidas e descubra qual estilo de dança e música combina perfeitamente com sua
+                personalidade!</p>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div class="header">
+            <h1>DanceStep</h1>
+            <p>Aprenda a dançar com nossas coreografias animadas!</p>
+        </div>
+
+        <!-- Stage Modal - CÓDIGO SECUNDÁRIO APLICADO COM CORREÇÕES PARA MOBILE -->
+        <div class="stage-modal" id="stageModal">
+            <div class="stage-header">
+                <h2>🎭 Palco de Coreografia</h2>
+                <button class="close-stage" onclick="closeStage()">×</button>
+            </div>
+
+            <div class="dancers-palette">
+                <div class="palette-label">Arraste os dançarinos para o palco:</div>
+                <div class="dancer-item" draggable="true" ondragstart="dragStart(event)" data-color="#FF1493">
+                    <svg viewBox="0 0 50 70" style="width: 100%; height: 100%;">
+                        <circle cx="25" cy="10" r="8" fill="#FF1493" />
+                        <line x1="25" y1="18" x2="25" y2="45" stroke="#FF1493" stroke-width="3" />
+                        <line x1="25" y1="25" x2="15" y2="35" stroke="#FF1493" stroke-width="3" />
+                        <line x1="25" y1="25" x2="35" y2="35" stroke="#FF1493" stroke-width="3" />
+                        <line x1="25" y1="45" x2="15" y2="65" stroke="#FF1493" stroke-width="3" />
+                        <line x1="25" y1="45" x2="35" y2="65" stroke="#FF1493" stroke-width="3" />
+                    </svg>
+                </div>
+                <div class="dancer-item" draggable="true" ondragstart="dragStart(event)" data-color="#4169E1">
+                    <svg viewBox="0 0 50 70" style="width: 100%; height: 100%;">
+                        <circle cx="25" cy="10" r="8" fill="#4169E1" />
+                        <line x1="25" y1="18" x2="25" y2="45" stroke="#4169E1" stroke-width="3" />
+                        <line x1="25" y1="25" x2="15" y2="35" stroke="#4169E1" stroke-width="3" />
+                        <line x1="25" y1="25" x2="35" y2="35" stroke="#4169E1" stroke-width="3" />
+                        <line x1="25" y1="45" x2="15" y2="65" stroke="#4169E1" stroke-width="3" />
+                        <line x1="25" y1="45" x2="35" y2="65" stroke="#4169E1" stroke-width="3" />
+                    </svg>
+                </div>
+                <div class="dancer-item" draggable="true" ondragstart="dragStart(event)" data-color="#32CD32">
+                    <svg viewBox="0 0 50 70" style="width: 100%; height: 100%;">
+                        <circle cx="25" cy="10" r="8" fill="#32CD32" />
+                        <line x1="25" y1="18" x2="25" y2="45" stroke="#32CD32" stroke-width="3" />
+                        <line x1="25" y1="25" x2="15" y2="35" stroke="#32CD32" stroke-width="3" />
+                        <line x1="25" y1="25" x2="35" y2="35" stroke="#32CD32" stroke-width="3" />
+                        <line x1="25" y1="45" x2="15" y2="65" stroke="#32CD32" stroke-width="3" />
+                        <line x1="25" y1="45" x2="35" y2="65" stroke="#32CD32" stroke-width="3" />
+                    </svg>
+                </div>
+                <div class="dancer-item" draggable="true" ondragstart="dragStart(event)" data-color="#FFD700">
+                    <svg viewBox="0 0 50 70" style="width: 100%; height: 100%;">
+                        <circle cx="25" cy="10" r="8" fill="#FFD700" />
+                        <line x1="25" y1="18" x2="25" y2="45" stroke="#FFD700" stroke-width="3" />
+                        <line x1="25" y1="25" x2="15" y2="35" stroke="#FFD700" stroke-width="3" />
+                        <line x1="25" y1="25" x2="35" y2="35" stroke="#FFD700" stroke-width="3" />
+                        <line x1="25" y1="45" x2="15" y2="65" stroke="#FFD700" stroke-width="3" />
+                        <line x1="25" y1="45" x2="35" y2="65" stroke="#FFD700" stroke-width="3" />
+                    </svg>
+                </div>
+                <div class="dancer-item" draggable="true" ondragstart="dragStart(event)" data-color="#FF6347">
+                    <svg viewBox="0 0 50 70" style="width: 100%; height: 100%;">
+                        <circle cx="25" cy="10" r="8" fill="#FF6347" />
+                        <line x1="25" y1="18" x2="25" y2="45" stroke="#FF6347" stroke-width="3" />
+                        <line x1="25" y1="25" x2="15" y2="35" stroke="#FF6347" stroke-width="3" />
+                        <line x1="25" y1="25" x2="35" y2="35" stroke="#FF6347" stroke-width="3" />
+                        <line x1="25" y1="45" x2="15" y2="65" stroke="#FF6347" stroke-width="3" />
+                        <line x1="25" y1="45" x2="35" y2="65" stroke="#FF6347" stroke-width="3" />
+                    </svg>
+                </div>
+                <div class="dancer-item" draggable="true" ondragstart="dragStart(event)" data-color="#9370DB">
+                    <svg viewBox="0 0 50 70" style="width: 100%; height: 100%;">
+                        <circle cx="25" cy="10" r="8" fill="#9370DB" />
+                        <line x1="25" y1="18" x2="25" y2="45" stroke="#9370DB" stroke-width="3" />
+                        <line x1="25" y1="25" x2="15" y2="35" stroke="#9370DB" stroke-width="3" />
+                        <line x1="25" y1="25" x2="35" y2="35" stroke="#9370DB" stroke-width="3" />
+                        <line x1="25" y1="45" x2="15" y2="65" stroke="#9370DB" stroke-width="3" />
+                        <line x1="25" y1="45" x2="35" y2="65" stroke="#9370DB" stroke-width="3" />
+                    </svg>
                 </div>
             </div>
 
-            <div id="remedios" class="content-section">
-                <div class="header">
-                    <h2>Abastecimento de Remédios</h2>
-                    <p>Disponibilidade de medicamentos nas farmácias públicas</p>
-                </div>
+            <div class="stage-container" id="stageContainer" ondrop="drop(event)" ondragover="allowDrop(event)">
+                <div class="stage-curtain"></div>
+                <div class="stage-spotlight"></div>
+                <div class="stage-floor"></div>
+            </div>
 
-                <div class="table-container">
-                    <div class="table-header">
-                        UBS - Unidades Básicas de Saúde
-                    </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Unidade</th>
-                                <th>Endereço</th>
-                                <th>Horário Funcionamento</th>
-                                <th>Último Abastecimento</th>
-                                <th>Próximo Abastecimento</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>UBS Centro</strong></td>
-                                <td>Rua Senhor do Bonfim, 123</td>
-                                <td>07:00 - 17:00</td>
-                                <td>01/09/2025</td>
-                                <td>05/09/2025</td>
-                                <td><span class="status disponivel">Bem Abastecida</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>UBS Tomba</strong></td>
-                                <td>Av. João Durval, 456</td>
-                                <td>07:00 - 16:00</td>
-                                <td>28/08/2025</td>
-                                <td>03/09/2025</td>
-                                <td><span class="status limitado">Estoque Baixo</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>UBS Conceição</strong></td>
-                                <td>Rua da Conceição, 789</td>
-                                <td>08:00 - 17:00</td>
-                                <td>02/09/2025</td>
-                                <td>06/09/2025</td>
-                                <td><span class="status disponivel">Bem Abastecida</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>UBS Feira VII</strong></td>
-                                <td>Rua Marechal Deodoro, 321</td>
-                                <td>07:30 - 16:30</td>
-                                <td>30/08/2025</td>
-                                <td>04/09/2025</td>
-                                <td><span class="status indisponivel">Desabastecida</span></td>
-                            </tr>
-                            <tr>
-                                <td><strong>UBS Campo Limpo</strong></td>
-                                <td>Av. Campo Limpo, 654</td>
-                                <td>07:00 - 17:00</td>
-                                <td>01/09/2025</td>
-                                <td>05/09/2025</td>
-                                <td><span class="status disponivel">Bem Abastecida</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div class="stage-controls">
+                <button class="stage-btn" onclick="saveCoreography()">💾 Salvar Coreografia</button>
+                <button class="stage-btn secondary" onclick="clearStage()">🗑️ Limpar Palco</button>
+                <button class="stage-btn" onclick="animateDancers()">▶️ Animar Dançarinos</button>
+            </div>
+        </div>
 
-                <div class="table-container">
-                    <div class="table-header">
-                        Farmácias Populares
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Farmácia</th>
-                                    <th>Endereço</th>
-                                    <th>Horário Funcionamento</th>
-                                    <th>Último Abastecimento</th>
-                                    <th>Próximo Abastecimento</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Farmácia Popular Centro</strong></td>
-                                    <td>Praça da Matriz, 100</td>
-                                    <td>08:00 - 18:00</td>
-                                    <td>02/09/2025</td>
-                                    <td>09/09/2025</td>
-                                    <td><span class="status disponivel">Bem Abastecida</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Farmácia Popular Shopping</strong></td>
-                                    <td>Shopping Feira, Loja 45</td>
-                                    <td>09:00 - 21:00</td>
-                                    <td>31/08/2025</td>
-                                    <td>07/09/2025</td>
-                                    <td><span class="status limitado">Estoque Baixo</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
+        <!-- Quiz Modal -->
+        <div class="quiz-modal" id="quizModal">
+            <div class="quiz-header">
+                <h2>🎵 Descubra Seu Estilo Musical</h2>
+                <p class="quiz-subtitle">Responda as perguntas e descubra qual ritmo combina com você!</p>
+                <button class="close-quiz" onclick="closeQuiz()">×</button>
+            </div>
+
+            <div class="quiz-progress" id="quizProgress">
+                <div class="progress-dot active"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+                <div class="progress-dot"></div>
+            </div>
+
+            <div id="quizQuestions">
+                <!-- Question 1 -->
+                <div class="quiz-question active" data-question="1">
+                    <div class="question-number">Pergunta 1 de 6</div>
+                    <div class="question-text">O que a música significa para você?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectAnswer(1, 'a')">
+                            <span class="option-letter">A</span>
+                            Conexão com as raízes e tradição.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(1, 'b')">
+                            <span class="option-letter">B</span>
+                            União e momentos leves com pessoas queridas.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(1, 'c')">
+                            <span class="option-letter">C</span>
+                            Energia que contagia e me faz dançar.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(1, 'd')">
+                            <span class="option-letter">D</span>
+                            Liberdade de me expressar sem limites.
+                        </div>
                     </div>
                 </div>
 
-                <div class="info-card">
-                    <h3>Medicamentos Disponíveis</h3>
-                    <ul>
-                        <li><strong>Medicamentos Básicos:</strong> Paracetamol, Dipirona, Ibuprofeno</li>
-                        <li><strong>Hipertensão:</strong> Captopril, Enalapril, Atenolol</li>
-                        <li><strong>Diabetes:</strong> Metformina, Glibenclamida, Insulina</li>
-                        <li><strong>Antibióticos:</strong> Amoxicilina, Cefalexina (com receita)</li>
-                        <li><strong>Outros:</strong> Omeprazol, Sinvastatina, Losartana</li>
-                    </ul>
+                <!-- Question 2 -->
+                <div class="quiz-question" data-question="2">
+                    <div class="question-number">Pergunta 2 de 6</div>
+                    <div class="question-text">Quando você está em um dia difícil, o que procura na música?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectAnswer(2, 'a')">
+                            <span class="option-letter">A</span>
+                            Força e alegria para não perder a esperança.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(2, 'b')">
+                            <span class="option-letter">B</span>
+                            Leveza e descontração para esquecer os problemas.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(2, 'c')">
+                            <span class="option-letter">C</span>
+                            Animação e movimento para renovar o ânimo.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(2, 'd')">
+                            <span class="option-letter">D</span>
+                            Intensidade para extravasar e liberar tudo.
+                        </div>
+                    </div>
                 </div>
 
-                <div class="info-card">
-                    <h3>Como Retirar Medicamentos</h3>
-                    <ul>
-                        <li><strong>Documentos:</strong> RG, CPF e Cartão SUS</li>
-                        <li><strong>Receita:</strong> Obrigatória para medicamentos controlados</li>
-                        <li><strong>Validade:</strong> Receita válida por 30 dias</li>
-                        <li><strong>Quantidade:</strong> Limite de 30 dias por retirada</li>
-                        <li><strong>Horário:</strong> Conforme funcionamento de cada unidade</li>
-                    </ul>
+                <!-- Question 3 -->
+                <div class="quiz-question" data-question="3">
+                    <div class="question-number">Pergunta 3 de 6</div>
+                    <div class="question-text">Qual cenário você escolheria para ouvir música?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectAnswer(3, 'a')">
+                            <span class="option-letter">A</span>
+                            Uma roda animada na rua ou no barzinho.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(3, 'b')">
+                            <span class="option-letter">B</span>
+                            Um encontro íntimo com amigos próximos.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(3, 'c')">
+                            <span class="option-letter">C</span>
+                            Um carnaval ou show em multidão.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(3, 'd')">
+                            <span class="option-letter">D</span>
+                            Uma pista lotada com luzes e batidas.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="quiz-question" data-question="4">
+                    <div class="question-number">Pergunta 4 de 6</div>
+                    <div class="question-text">Como você expressa seus sentimentos através da música?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectAnswer(4, 'a')">
+                            <span class="option-letter">A</span>
+                            Cantando junto em coro, no improviso.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(4, 'b')">
+                            <span class="option-letter">B</span>
+                            Sorrindo, brincando e compartilhando.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(4, 'c')">
+                            <span class="option-letter">C</span>
+                            Dançando, vibrando e celebrando.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(4, 'd')">
+                            <span class="option-letter">D</span>
+                            Pulando, gritando e vivendo a intensidade.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="quiz-question" data-question="5">
+                    <div class="question-number">Pergunta 5 de 6</div>
+                    <div class="question-text">O que mais importa para você em uma música?</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectAnswer(5, 'a')">
+                            <span class="option-letter">A</span>
+                            A batida marcante e tradicional.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(5, 'b')">
+                            <span class="option-letter">B</span>
+                            A descontração e proximidade nas letras.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(5, 'c')">
+                            <span class="option-letter">C</span>
+                            A energia que levanta todo mundo.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(5, 'd')">
+                            <span class="option-letter">D</span>
+                            A força da batida e o impacto sonoro.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 6 -->
+                <div class="quiz-question" data-question="6">
+                    <div class="question-number">Pergunta 6 de 6</div>
+                    <div class="question-text">Se sua vida fosse uma trilha sonora, seria:</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectAnswer(6, 'a')">
+                            <span class="option-letter">A</span>
+                            Um clássico que nunca sai de moda.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(6, 'b')">
+                            <span class="option-letter">B</span>
+                            Uma música leve e divertida.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(6, 'c')">
+                            <span class="option-letter">C</span>
+                            Um hit contagiante de verão.
+                        </div>
+                        <div class="quiz-option" onclick="selectAnswer(6, 'd')">
+                            <span class="option-letter">D</span>
+                            Uma batida intensa que domina a pista.
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div id="banheiros" class="content-section">
-                <div class="header">
-                    <h2>Banheiros Adaptados</h2>
-                    <p>Localização de banheiros acessíveis para pessoas com deficiência</p>
-                </div>
-
-                <div class="table-container">
-                    <div class="table-header">
-                        Shoppings e Centros Comerciais
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Local</th>
-                                    <th>Endereço</th>
-                                    <th>Quantidade</th>
-                                    <th>Localização</th>
-                                    <th>Horário Funcionamento</th>
-                                    <th>Acessibilidade</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Shopping Feira</strong></td>
-                                    <td>Av. João Durval Carneiro, 500</td>
-                                    <td>4 unidades</td>
-                                    <td>1º e 2º Piso - Praça de Alimentação</td>
-                                    <td>09:00 - 22:00</td>
-                                    <td>Rampa, Barras, Fraldário</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Boulevard Shopping</strong></td>
-                                    <td>BR-324, Km 6</td>
-                                    <td>6 unidades</td>
-                                    <td>Térreo e 1º Piso - Próximo aos Elevadores</td>
-                                    <td>10:00 - 22:00</td>
-                                    <td>Rampa, Barras, Fraldário</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Centro de Abastecimento</strong></td>
-                                    <td>Av. Getúlio Vargas, 1234</td>
-                                    <td>2 unidades</td>
-                                    <td>Entrada Principal - Setor A</td>
-                                    <td>05:00 - 18:00</td>
-                                    <td>Rampa, Barras</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Plaza Shopping</strong></td>
-                                    <td>Rua Marechal Deodoro, 78</td>
-                                    <td>3 unidades</td>
-                                    <td>Térreo - Próximo à Entrada</td>
-                                    <td>09:00 - 21:00</td>
-                                    <td>Rampa, Barras, Fraldário</td>
-                                    <td><span class="status limitado">Manutenção</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="table-container">
-                    <div class="table-header">
-                        Hospitais e Unidades de Saúde
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Local</th>
-                                    <th>Endereço</th>
-                                    <th>Quantidade</th>
-                                    <th>Localização</th>
-                                    <th>Horário Funcionamento</th>
-                                    <th>Acessibilidade</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Hospital Dom Pedro de Alcântara</strong></td>
-                                    <td>Rua Conselheiro Franco, 10</td>
-                                    <td>8 unidades</td>
-                                    <td>Todos os Andares - Próximo às Enfermarias</td>
-                                    <td>24 horas</td>
-                                    <td>Rampa, Barras, Cadeirante</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Hospital da Mulher</strong></td>
-                                    <td>Av. Eduardo Fróes da Mota, 100</td>
-                                    <td>6 unidades</td>
-                                    <td>Recepção, Maternidade e Ambulatório</td>
-                                    <td>24 horas</td>
-                                    <td>Rampa, Barras, Fraldário</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>UPA Norte</strong></td>
-                                    <td>Rua Direita da Conceição, 456</td>
-                                    <td>4 unidades</td>
-                                    <td>Recepção e Observação</td>
-                                    <td>24 horas</td>
-                                    <td>Rampa, Barras</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Hospital Clériston Andrade</strong></td>
-                                    <td>Av. Clériston Andrade, 322</td>
-                                    <td>10 unidades</td>
-                                    <td>Todos os Setores</td>
-                                    <td>24 horas</td>
-                                    <td>Rampa, Barras, Cadeirante</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>CAPS - Centro Atenção Psicossocial</strong></td>
-                                    <td>Rua Professor Magalhães, 89</td>
-                                    <td>2 unidades</td>
-                                    <td>Recepção</td>
-                                    <td>07:00 - 17:00</td>
-                                    <td>Rampa, Barras</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="table-container">
-                    <div class="table-header">
-                        Espaços Públicos e Repartições
-                    </div>
-                    <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Local</th>
-                                    <th>Endereço</th>
-                                    <th>Quantidade</th>
-                                    <th>Localização</th>
-                                    <th>Horário Funcionamento</th>
-                                    <th>Acessibilidade</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>Prefeitura Municipal</strong></td>
-                                    <td>Praça da Matriz, s/n</td>
-                                    <td>3 unidades</td>
-                                    <td>Térreo e 1º Andar</td>
-                                    <td>07:00 - 13:00</td>
-                                    <td>Rampa, Barras</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Terminal Rodoviário</strong></td>
-                                    <td>Av. Senhor do Bonfim, 200</td>
-                                    <td>4 unidades</td>
-                                    <td>Saguão Principal</td>
-                                    <td>05:00 - 23:00</td>
-                                    <td>Rampa, Barras</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Centro de Convenções</strong></td>
-                                    <td>Av. Maria Quitéria, 1500</td>
-                                    <td>6 unidades</td>
-                                    <td>Hall de Entrada e Auditórios</td>
-                                    <td>Conforme Eventos</td>
-                                    <td>Rampa, Barras, Elevador</td>
-                                    <td><span class="status disponivel">Disponível</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="info-card">
-                    <h3>Recursos de Acessibilidade Disponíveis</h3>
-                    <ul>
-                        <li><strong>Rampa de Acesso:</strong> Entrada facilitada para cadeirantes</li>
-                        <li><strong>Barras de Apoio:</strong> Suporte lateral e posterior</li>
-                        <li><strong>Fraldário:</strong> Mesa para troca de fraldas adulto/infantil</li>
-                        <li><strong>Espaço Ampliado:</strong> Circulação adequada para cadeira de rodas</li>
-                        <li><strong>Acionamento Facilitado:</strong> Torneiras e dispensadores adaptados</li>
-                    </ul>
-                </div>
-
-                <div class="info-card">
-                    <h3>Como Denunciar Problemas</h3>
-                    <ul>
-                        <li><strong>Ouvidoria Municipal:</strong> (75) 3602-8000</li>
-                        <li><strong>WhatsApp:</strong> (75) 99999-0000</li>
-                        <li><strong>Site:</strong> www.feiradesantana.ba.gov.br</li>
-                        <li><strong>Presencialmente:</strong> Secretaria de Acessibilidade</li>
-                    </ul>
+            <!-- Results Section -->
+            <div class="quiz-result" id="quizResult">
+                <div class="result-icon" id="resultIcon"></div>
+                <div class="result-title" id="resultTitle"></div>
+                <div class="result-description" id="resultDescription"></div>
+                <div class="result-buttons">
+                    <button class="result-btn" onclick="applyGenreAndClose()">Começar a Dançar!</button>
+                    <button class="result-btn secondary" onclick="restartQuiz()">Refazer Quiz</button>
                 </div>
             </div>
 
-            <div id="projeto" class="content-section">
-                <div class="header">
-                    <h2>Sobre o Projeto</h2>
-                    <p>Conectando pessoas com acessibilidade e qualidade de vida</p>
+            <div class="quiz-nav" id="quizNav">
+                <button class="quiz-nav-btn" onclick="previousQuestion()" id="prevBtn" disabled>← Anterior</button>
+                <button class="quiz-nav-btn" onclick="nextQuestion()" id="nextBtn" disabled>Próxima →</button>
+            </div>
+        </div>
+
+        <div class="dance-container">
+            <div class="step-suggestions">
+                <div>
+                    <h2 class="section-title">FUNDAMENTOS PARA QUALQUER ESTILO DE DANÇA</h2>
+
+                    <div class="fundamentals-intro">
+                        <p>Estes são os elementos essenciais que formam a base de qualquer estilo de dança. Domine esses
+                            fundamentos e você estará preparado para aprender qualquer ritmo!</p>
+                    </div>
+
+
+                    <!-- Área dos textos explicativos -->
+                    <div class="fundamentals-text-container" id="fundamentalsTextContainer">
+                        <div class="fundamental-text active" id="text-rhythm">
+                            <h3>Percepção Rítmica</h3>
+                            <p>Sinta a música ou o som. Bata o pé ou as palmas seguindo o ritmo. Você precisa ouvir com
+                                atenção e repetir o padrão. Isso vai ajudar seu corpo a entrar no tempo certo.</p>
+                        </div>
+
+                        <div class="fundamental-text" id="text-weight">
+                            <h3>Controle de Peso</h3>
+                            <p>Distribua o peso do seu corpo igualmente entre os pés. Se mover para um lado, transfira o
+                                peso suavemente. Você precisa estar consciente do seu equilíbrio para se mover com
+                                segurança.</p>
+                        </div>
+
+                        <div class="fundamental-text" id="text-knees">
+                            <h3>Flexão de Joelhos</h3>
+                            <p>Afaste um pouco os pés, dobre os joelhos devagar, mantendo as costas retas. Você precisa
+                                flexionar para amortecer impactos e dar mais estabilidade ao movimento.</p>
+                        </div>
+
+                        <div class="fundamental-text" id="text-posture">
+                            <h3>Postura Corporal</h3>
+                            <p>Endireite as costas, abra o peito, relaxe os ombros. Você precisa manter essa postura
+                                para evitar dores e ter mais controle nos movimentos.</p>
+                        </div>
+
+                        <div class="fundamental-text" id="text-space">
+                            <h3>Consciência Espacial</h3>
+                            <p>Olhe ao redor, perceba o espaço, veja onde estão pessoas e objetos. Você precisa usar
+                                essa percepção para se movimentar sem esbarrar e com mais precisão.</p>
+                        </div>
+
+                        <div class="fundamental-text" id="text-coordination">
+                            <h3>Coordenação Motora</h3>
+                            <p>Comece com movimentos simples (braços e pernas juntos) e depois combine mais de um
+                                movimento ao mesmo tempo. Você precisa praticar isso para que seus gestos fiquem mais
+                                harmoniosos.</p>
+                        </div>
+                    </div>
+
+                    <div class="dance-figure-controls">
+                        <button class="figure-btn active" onclick="showFundamentalText('rhythm')">Percepção
+                            Rítmica</button>
+                        <button class="figure-btn" onclick="showFundamentalText('weight')">Controle de Peso</button>
+                        <button class="figure-btn" onclick="showFundamentalText('knees')">Flexão de Joelhos</button>
+                        <button class="figure-btn" onclick="showFundamentalText('posture')">Postura Corporal</button>
+                        <button class="figure-btn" onclick="showFundamentalText('space')">Consciência Espacial</button>
+                        <button class="figure-btn" onclick="showFundamentalText('coordination')">Coordenação
+                            Motora</button>
+                    </div>
+
+                    <div class="steps-grid">
+                        <div class="step-card active" onclick="selectStep(1)">
+                            <div class="step-number">1</div>
+                            <div class="step-sprite">
+                                <div class="step-icon">🎵</div>
+                            </div>
+                            <div class="step-title">Percepção Rítmica</div>
+                            <div class="step-description">Identificar e seguir o compasso da música</div>
+                        </div>
+
+                        <div class="step-card" onclick="selectStep(2)">
+                            <div class="step-number">2</div>
+                            <div class="step-sprite">
+                                <div class="step-icon">⚖️</div>
+                            </div>
+                            <div class="step-title">Controle de Peso</div>
+                            <div class="step-description">Transferência de peso entre os pés</div>
+                        </div>
+
+                        <div class="step-card" onclick="selectStep(3)">
+                            <div class="step-number">3</div>
+                            <div class="step-sprite">
+                                <div class="step-icon">🦵</div>
+                            </div>
+                            <div class="step-title">Flexão de Joelhos</div>
+                            <div class="step-description">Manter joelhos levemente flexionados</div>
+                        </div>
+
+                        <div class="step-card" onclick="selectStep(4)">
+                            <div class="step-number">4</div>
+                            <div class="step-sprite">
+                                <div class="step-icon">🧍</div>
+                            </div>
+                            <div class="step-title">Postura Corporal</div>
+                            <div class="step-description">Alinhamento correto da coluna</div>
+                        </div>
+
+                        <div class="step-card" onclick="selectStep(5)">
+                            <div class="step-number">5</div>
+                            <div class="step-sprite">
+                                <div class="step-icon">👀</div>
+                            </div>
+                            <div class="step-title">Consciência Espacial</div>
+                            <div class="step-description">Noção do espaço ao redor</div>
+                        </div>
+
+                        <div class="step-card" onclick="selectStep(6)">
+                            <div class="step-number">6</div>
+                            <div class="step-sprite">
+                                <div class="step-icon">🔄</div>
+                            </div>
+                            <div class="step-title">Coordenação Motora</div>
+                            <div class="step-description">Sincronização de movimentos</div>
+                        </div>
+                    </div>
+
+                    <div class="fundamentals-tips">
+                        <h3>Dicas Essenciais para Iniciantes:</h3>
+                        <ul>
+                            <li><strong>Respire naturalmente:</strong> Não prenda a respiração durante os movimentos
+                            </li>
+                            <li><strong>Comece devagar:</strong> Domine o básico antes de aumentar a velocidade</li>
+                            <li><strong>Use um espelho:</strong> Observe sua postura e corrija erros</li>
+                            <li><strong>Pratique regularmente:</strong> A consistência é mais importante que a
+                                intensidade</li>
+                            <li><strong>Ouça a música:</strong> Sinta o ritmo antes de tentar acompanhar</li>
+                        </ul>
+                    </div>
+
+                    <div class="step-button"
+                        style="grid-column: span 3; background: linear-gradient(45deg, #ff6b35, #f093fb); color: white; font-weight: bold; padding: 20px; border-radius: 15px; cursor: pointer;"
+                        onclick="startSequence()">
+                        <div style="font-size: 1.2em;">🎯 Praticar Sequência de Fundamentos</div>
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-top: 5px;">Exercite todos os elementos
+                            básicos em sequência</div>
+                    </div>
                 </div>
 
-                <div class="info-card">
-                    <h3>🎯 Nossa Missão</h3>
-                    <p style="font-size: 1.1rem; line-height: 1.6; color: #555; margin-top: 1rem;">
-                        O **Vida + Acessível** é uma iniciativa que visa reunir em uma única plataforma digital as informações essenciais para melhorar a qualidade de vida da população de Feira de Santana. Nosso objetivo é facilitar o acesso a serviços básicos e promover a inclusão social através da tecnologia.
-                    </p>
-                </div>
+                <div>
+                    <h2 class="section-title">EXPERIMENTE DIFERENTES MÚSICAS</h2>
 
-                <div class="info-card">
-                    <h3>🚀 O que Oferecemos</h3>
-                    <ul style="font-size: 1rem; line-height: 1.8;">
-                        <li><strong>🚌 Transporte Público:</strong> Horários atualizados de todas as linhas de ônibus da cidade, incluindo rotas, intervalos e status operacional em tempo real</li>
-                        <li><strong>💊 Saúde Pública:</strong> Informações sobre disponibilidade de medicamentos nas UBS e Farmácias Populares, com dados de abastecimento sempre atualizados</li>
-                        <li><strong>♿ Acessibilidade:</strong> Mapeamento completo de banheiros adaptados em shoppings, hospitais e espaços públicos, garantindo autonomia para pessoas com deficiência</li>
-                        <li><strong>📱 Interface Responsiva:</strong> Acesso fácil e intuitivo através de qualquer dispositivo móvel, com design pensado na experiência do usuário</li>
-                    </ul>
-                </div>
+                   <div class="choreography-section">
+    <iframe class="choreography-video"
+        src="https://player.vimeo.com/video/1125709046?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+        width="848" height="382" frameborder="0" 
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" 
+        referrerpolicy="strict-origin-when-cross-origin" 
+        title="Coreografia de Samba" 
+        allowfullscreen></iframe>
 
-                <div class="info-card">
-                    <h3>💡 Por que Criamos Este Projeto?</h3>
-                    <p style="font-size: 1.1rem; line-height: 1.6; color: #555; margin-top: 1rem;">
-                        Identificamos que as informações sobre serviços essenciais estavam dispersas em diferentes locais, dificultando o acesso da população. Muitas vezes, as pessoas perdiam tempo se deslocando até locais sem saber se o serviço estava disponível ou funcionando.
-                    </p>
-                    <br>
-                    <p style="font-size: 1.1rem; line-height: 1.6; color: #555;">
-                        Com o **Vida + Acessível**, centralizamos essas informações vitais em um só lugar, permitindo que cidadãos planejem melhor suas rotinas.
-                    </p>
+    <div class="choreography-tips">
+        <h3>Dicas para esta coreografia:</h3>
+        <ul>
+            <li>Mantenha os joelhos levemente flexionados para facilitar o movimento dos quadris</li>
+            <li>O gingado do samba vem da alternância de peso entre os pés</li>
+            <li>Mantenha os braços soltos para acompanhar o balanço do corpo</li>
+            <li>Pratique o passo básico até dominar o ritmo antes de adicionar variações</li>
+        </ul>
+    </div>
+</div>
+
+                    <div class="controls">
+                        <button class="control-btn" onclick="previousTrack()">⏮</button>
+                        <button class="control-btn" onclick="playPause()" id="playBtn">▶</button>
+                        <button class="control-btn" onclick="nextTrack()">⏭</button>
+                    </div>
+
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+
+                    <div class="genre-buttons">
+                        <div class="genre-btn active" onclick="selectGenre('samba')">Samba</div>
+                        <div class="genre-btn" onclick="selectGenre('forro')">Forró</div>
+                        <div class="genre-btn" onclick="selectGenre('pagode')">Pagode</div>
+                        <div class="genre-btn" onclick="selectGenre('funk')">Funk</div>
+                        <div class="genre-btn" onclick="selectGenre('street')">Street Dance</div>
+                        <div class="genre-btn" onclick="selectGenre('contemporanea')">Contemporânea</div>
+                        <div class="genre-btn" onclick="selectGenre('axe')">Axé</div>
+                        <div class="genre-btn" onclick="selectGenre('dance')">Dance</div>
+                    </div>
+
+                    <div class="current-song">
+                        <div class="song-title" id="songTitle">Samba no Pé - Coreografia</div>
+                        <div class="song-artist" id="songArtist">FitDance/Cia de Dança</div>
+                    </div>
+
+                    <button class="start-session-btn" onclick="startSession()">
+                        Iniciar Prática
+                    </button>
                 </div>
+            </div>
+
+            <div class="instruction-text" id="instructionText">
+                Selecione um fundamento e uma música para começar a aprender! A coreografia mostrará como aplicar cada
+                elemento.
             </div>
         </div>
     </div>
-    <script>
-        function showSection(sectionId) {
-        // Remove 'active' de todas as seções e botões
-        document.querySelectorAll('.content-section').forEach(section => {
-            section.classList.remove('active');
-        });
-        document.querySelectorAll('.menu-item').forEach(item => {
-            item.classList.remove('active');
-        });
 
-        // Adiciona 'active' à seção e ao botão clicado
-        document.getElementById(sectionId).classList.add('active');
-        document.querySelector(`.menu-item[onclick="showSection('${sectionId}')"]`).classList.add('active');
-    }
-    </script>
-    
-</script>
+     <script src="script.js"></script>
 </body>
+
 </html>
